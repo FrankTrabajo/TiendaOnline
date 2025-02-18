@@ -1,0 +1,52 @@
+{% extends 'base.html.twig' %}
+
+{% block title %} Mi Pedido {% endblock %}
+
+{% block body %}
+    <h1>Mi Pedido</h1>
+
+    {% if pedido %}
+        <p><strong>Fecha del Pedido:</strong> {{ pedido.fechaPedido|date('d/m/Y H:i') }}</p>
+        <p><strong>Total:</strong> €{{ pedido.precioTotal }}</p>
+
+        <h2>Productos en el Pedido</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Producto</th>
+                    <th>Precio</th>
+                    <th>Cantidad</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for producto in productos %}
+                    <tr>
+                        <td>{{ producto.titulo }}</td>
+                        <td>€{{ producto.precio }}</td>
+                        <td>{{ producto.cantidad}}</td> {# Aquí deberíamos obtener la cantidad si está en ProductoPedido #}
+                        <td>
+                            <form action="/anadir-pedido/{{producto.id}}" method='post'>
+                                <input type="submit" value="+">
+                            </form>
+                        </td>
+                        <td>
+                            <form action="/delete-pedido/{{producto.id}}" method='post'>
+                                <input type='hidden' class="idProd" value='{{ producto.id }}'>
+                                <input type="submit" value="-">
+                            </form>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="4">No hay productos en tu pedido.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No tienes un pedido en curso.</p>
+    {% endif %}
+
+    <a href="/">Volver a la tienda</a>
+{% endblock %}

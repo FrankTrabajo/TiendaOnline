@@ -1,0 +1,32 @@
+{{ block(title) }}Error 404 {% endblock %}
+
+{{ block(body) }}
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f5f5f5;
+    }
+    .header-container {
+        background-color: rgb(255, 0, 0);
+        color: white;
+        padding: 15px;
+    }
+    .error{
+        text-align: center;
+        color: black;
+    }
+</style>
+
+<header>
+    <div class="header-container">
+        <h1>Error 404</h1>
+    </div>
+</header>
+<main>
+    <div class='error'>
+        <h1>Error 404 {{error}}</h1>
+    </div>
+</main>
+{% endblock %}

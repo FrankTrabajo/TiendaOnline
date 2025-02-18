@@ -1,0 +1,171 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello ProductoController!{% endblock %}
+
+{% block body %}
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f5f5f5;
+    }
+
+    .header-container {
+        background-color: rgb(255, 0, 0);
+        color: white;
+        text-align: center;
+        padding: 15px;
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .main-content {
+        max-width: 1200px;
+        margin: auto;
+        padding: 20px;
+    }
+
+    .productos-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 20px;
+    }
+
+    .producto-card {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        width: 250px;
+        padding: 15px;
+        text-align: center;
+        transition: transform 0.2s;
+    }
+
+    .producto-card:hover {
+        transform: scale(1.05);
+    }
+
+    .producto-card img {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .producto-card h3 {
+        font-size: 18px;
+        margin: 10px 0;
+        color: #333;
+    }
+
+    .producto-card p {
+        color: #666;
+        font-size: 16px;
+    }
+
+    .producto-card .precio {
+        font-weight: bold;
+        color: #e60000;
+        font-size: 20px;
+    }
+
+    .btn-comprar {
+        display: inline-block;
+        margin-top: 10px;
+        padding: 8px 15px;
+        background-color: rgb(255, 0, 0);
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        font-size: 16px;
+    }
+
+    .btn-comprar:hover {
+        background-color: darkred;
+    }
+
+    .login-options {
+        margin-left: auto; /* Empuja el login hacia la derecha */
+        display: flex; /* Permite que Login y Register estén en fila */
+        gap: 15px; /* Espaciado entre Login y Register */
+    }
+
+</style>
+
+<header>
+    <div class="header-container">
+        <h1>Bienvenido a nuestra tienda online</h1>
+        <div>
+            <a href='/ver-pedido'>Lista de pedidos</a>
+        </div>
+        <div class='login-options'>
+        {% if not is_granted('ROLE_USER') %}
+            <div class='login'>
+                <p><a href='/login'>Login</a></p>
+            </div>
+            <hr>
+            <div class='register'>
+                <p><a href='/register'>Register</a></p>
+            </div>
+        {% else %}
+            <div class='logout'>
+                <p><a href="{{ path('app_logout') }}">Logout</a></p>
+            </div>
+        {% endif %}
+        </div>
+    </div>
+</header>
+<main>
+    <div class='main-content'>
+        <!-- Aqui van los productos -->
+        <div class='productos-container'>
+            {% for producto in productos %}
+                <div class='producto-card'>
+                    <img src="{{ asset('uploads/files/' ~ producto.foto) }}" alt="{{ producto.titulo }}">
+                    <p>{{producto.titulo}}</p>
+                    <p>{{producto.precio}}€</p>
+                    <form action='/show/{{producto.id}}'>
+                        <input type='hidden' value='{{producto.id}}'>
+                        <input type='submit' value='Ver producto'>
+                    </form>
+                    <form action="/anadir-pedido/{{producto.id}}" method='post'>
+                        <input type='hidden' class="idProd" value='{{ producto.id }}'>
+                        <button type="submit" class="btn-comprar">Añadir al pedido</button>
+                    </form>
+                </div>
+            {% endfor %}
+        <div>
+    </div>
+</main>
+
+<script>
+//     document.addEventListener('DOMContentLoaded', () => {
+//     document.querySelectorAll('.anadir-producto-form').forEach(form => {
+//         form.addEventListener('submit', function (e) {
+//             e.preventDefault();
+
+//             let idProd = this.querySelector('.idProd').value;
+
+//             fetch("/anadir-pedido/" + idProd, {
+//                 method: 'POST',
+//                 headers: {
+//                     "Content-Type": "application/json"
+//                 }
+//             })
+//             .then(response => response.json())
+//             .then(data => {
+//                 if (data.status == 201) {
+//                     alert("Producto añadido al pedido");
+//                 } else {
+//                     alert("Error al añadir producto");
+//                 }
+//             });
+//         });
+//     });
+// });
+
+</script>
+{% endblock %}
