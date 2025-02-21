@@ -15,24 +15,27 @@ use Symfony\Component\Routing\Attribute\Route;
 final class MailControler extends AbstractController{
     #[Route("/mail")]
     public function sendMail(EntityManagerInterface $entityManger, MailerInterface $mail, SessionInterface $session): Response{
-        
-        $usuario = $this->getUser();
-        $user = $entityManger->getRepository(Usuario::class)->find($usuario);
-        //QUEREMOSA algo de la clase pedido por eso es class Pedido :D
-        $pedido = $entityManger->getRepository(Pedido::class)->findOneBy([
+        try {
+            $usuario = $this->getUser();
+            $user = $entityManger->getRepository(Usuario::class)->find($usuario);
             
-            'usuario'=>$usuario
-        ]);
-        $email= (new Email())
-            ->from("tiendaOnlineNLF@gmail.com")
-            ->to($user->getEmail())
-            ->subject("Pedido realizado correctamente")
-            ->html('
-            <h1>Pedido realizado correctamente</h1>
-            <p>Correo llegado</p>
-            ');
-        $mail->send($email);
+            $pedido = $entityManger->getRepository(Pedido::class)->findOneBy([
+                'usuario'=>$usuario
+            ]);
+            $email= (new Email())
+                ->from("tiendaOnlineNLF@gmail.com")
+                ->to($user->getEmail())
+                ->subject("Pedido realizado correctamente")
+                ->html('
+                <h1>Pedido realizado correctamente</h1>
+                <p>Correo llegado</p>
+                ');
+            $mail->send($email);
 
-        return new Response('Email enviado correctamente');
+            return new Response('Email enviado correctamente');
+        } catch (\Throwable $ex) {
+            return new Response($ex.'Ha ocurrido un error');
+        }
+        
     }
 }
