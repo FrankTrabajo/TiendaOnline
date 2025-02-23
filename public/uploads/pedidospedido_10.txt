@@ -1,0 +1,9 @@
+Detalles del pedido
+Fecha: 23/02/2025 20:02.
+Usuario: admin@correo.com.
+---------------------------------------
+Productos:
+- Lavadora LG 12kg | Cantidad: 2 | Precio: 470€. 
+- Aspiradora Dyson V15 | Cantidad: 1 | Precio: 699.99€. 
+---------------------------------------
+Total: 1639.99€. 

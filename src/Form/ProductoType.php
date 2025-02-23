@@ -2,12 +2,13 @@
 
 namespace App\Form;
 
-use App\Entity\Pedido;
 use App\Entity\Producto;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\File;
 
 class ProductoType extends AbstractType
 {
@@ -17,12 +18,23 @@ class ProductoType extends AbstractType
             ->add('titulo')
             ->add('descripcion')
             ->add('precio')
-            ->add('foto')
-            ->add('pedidos', EntityType::class, [
-                'class' => Pedido::class,
-                'choice_label' => 'id',
-                'multiple' => true,
+            ->add('foto', FileType::class, [
+                'label' => 'Imagen del Producto',
+                'mapped' => false, // Importante para evitar que Doctrine intente guardar un objeto File
+                'required' => false,
+                'constraints' => [
+                    new File([
+                        'maxSize' => '2M',
+                        'mimeTypes' => [
+                            'image/jpeg',
+                            'image/png',
+                            'image/webp',
+                        ],
+                        'mimeTypesMessage' => 'Por favor, sube una imagen válida (JPG, PNG, WEBP).',
+                    ])
+                ],
             ])
+            ->add('submit', SubmitType::class);
         ;
     }
 

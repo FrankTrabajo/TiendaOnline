@@ -5,10 +5,14 @@ namespace App\Controller;
 use App\Entity\Producto;
 use App\Form\ProductoType;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
+use PhpParser\Node\Stmt\TryCatch;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\String\Slugger\SluggerInterface;
 
 final class ProductoController extends AbstractController
 {
@@ -36,9 +40,12 @@ final class ProductoController extends AbstractController
     }
 
     //Delete / id
-    #[Route('/delete/{id}', name: 'delete_producto', methods:['delete'])]
+    #[Route('/delete/{id}', name: 'delete_producto')]
     public function delete($id, EntityManagerInterface $entityManager): Response{
-
+        //$this->denyAccessUnlessGranted('ROLE_USER');
+        if(!$this->isGranted('ROLE_ADMIN')){
+            return $this->redirectToRoute('index_producto');
+        }
         $producto = $entityManager->find(Producto::class, $id);
 
         if(!$producto){
@@ -55,27 +62,64 @@ final class ProductoController extends AbstractController
     }
 
     //Create
-    #[Route('/create', name: 'create_producto', methods: ['post'])]
-    public function create(EntityManagerInterface $entityManager, Request $request): Response{
-
+    #[Route('/create', name: 'create_producto')]
+    public function create(EntityManagerInterface $entityManager, Request $request, SluggerInterface $slugger): Response {
+        if(!$this->isGranted('ROLE_ADMIN')){
+            return $this->redirectToRoute('index_producto');
+        }
         $producto = new Producto();
         $form = $this->createForm(ProductoType::class, $producto);
-
+        
         $form->handleRequest($request);
-
-        if($form->isSubmitted() && $form->isValid()){
+        
+        if ($form->isSubmitted() && $form->isValid()) {
+            $file = $form->get('foto')->getData();
+            if($file){
+                $originalFilename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                $safeFilename = $slugger->slug($originalFilename);
+                $newFilename = $safeFilename. '-'.uniqid().'.'.$file->guessExtension();
+                try{
+                    $file->move($this->getParameter('files_directory'), $newFilename);
+                } catch (FileException $e){
+                    throw new Exception('Hubo un error con la subida del archivo');
+                }
+            }
+            $producto->setFoto($newFilename);
             $entityManager->persist($producto);
             $entityManager->flush();
-
             return $this->redirectToRoute('index_producto');
         }
 
         return $this->render('producto/create.html.twig', [
             'form' => $form->createView()
         ]);
-
     }
 
 
+
     //Update
+    #[Route('/update/{id}', name: 'update_producto')]
+    public function update($id, EntityManagerInterface $entityManager, Request $request): Response{
+        if(!$this->isGranted('ROLE_ADMIN')){
+            return $this->redirectToRoute('index_producto');
+        }
+        $producto = $entityManager->getRepository(Producto::class)->find($id);
+        $form = $this->createForm(ProductoType::class, $producto);
+
+        $form->handleRequest($request);
+
+        if($form->isSubmitted() && $form->isValid()){
+            $entityManager->flush();
+
+            return $this->redirectToRoute('index_producto');
+        }
+
+        return $this->render('producto/update.html.twig', [
+            'form' => $form->createView(),
+            'producto' => $producto
+        ]);
+
+    }
+
+    
 }

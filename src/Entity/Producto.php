@@ -29,6 +29,9 @@ class Producto
     #[ORM\Column(length: 255)]
     private ?string $foto = null;
 
+    #[ORM\Column]
+    private ?int $stock = 0;
+
     #[ORM\OneToMany(targetEntity: ProductoPedido::class, mappedBy: 'producto')]
     private Collection $productosPedidos;
 
@@ -89,6 +92,14 @@ class Producto
     {
         $this->foto = $foto;
 
+        return $this;
+    }
+
+    public function getStock(): ?int {
+        return $this->stock;
+    }
+    public function setStock(int $stock): static {
+        $this->stock = $stock;
         return $this;
     }
 

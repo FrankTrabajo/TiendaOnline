@@ -1,0 +1,9 @@
+Detalles del pedido
+Fecha: 23/02/2025 21:31.
+Usuario: admin@correo.com.
+---------------------------------------
+Productos:
+- Refrigerador Samsung 350L | Cantidad: 1 | Precio: 599.99€. 
+- Lavadora LG 12kg | Cantidad: 2 | Precio: 470€. 
+---------------------------------------
+Total: 1539.99€. 

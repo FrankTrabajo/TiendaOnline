@@ -66,9 +66,15 @@
     }
 </style>
 
-<div class="container">
-    <h1>Crear Nuevo Producto</h1>
-    
-    {{ form(form) }}
-</div>
+    <div class="container">
+        <h1>Actualizar Producto: {{ producto.titulo }}</h1>
+
+        {{ form_start(form) }}
+            {{ form_row(form.titulo) }}
+            {{ form_row(form.descripcion) }}
+            {{ form_row(form.precio) }}
+            {{ form_row(form.foto) }}
+        {{ form_end(form) }}
+    </div>
 {% endblock %}
+

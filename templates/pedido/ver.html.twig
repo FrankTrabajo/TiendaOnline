@@ -3,6 +3,126 @@
 {% block title %} Mi Pedido {% endblock %}
 
 {% block body %}
+<style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 28px;
+            color: #333;
+        }
+
+        .pedido-container {
+            max-width: 1200px;
+            margin: auto;
+            padding: 20px;
+            background-color: white;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            margin-top: 30px;
+        }
+
+        .pedido-container p {
+            font-size: 16px;
+            color: #555;
+            margin: 10px 0;
+        }
+
+        .pedido-container h2 {
+            margin-top: 30px;
+            font-size: 22px;
+            color: #333;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        table th, table td {
+            padding: 12px;
+            border: 1px solid #ddd;
+        }
+
+        table th {
+            background-color: #f5f5f5;
+            color: #333;
+            font-weight: bold;
+        }
+
+        table td {
+            color: #666;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 8px 16px;
+            background-color: #1976d2;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .btn:hover {
+            background-color: #1565c0;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .action-buttons form {
+            display: inline-block;
+            margin: 0;
+        }
+
+        .empty-message {
+            text-align: center;
+            font-size: 16px;
+            color: #888;
+            margin-top: 30px;
+        }
+
+        .back-button {
+            display: block;
+            text-align: center;
+            margin-top: 30px;
+            font-size: 16px;
+            color: #1976d2;
+            text-decoration: none;
+        }
+
+        .back-button:hover {
+            text-decoration: underline;
+        }
+        button {
+            background-color: #1976d2;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #1565c0;
+        }
+    </style>
     <h1>Mi Pedido</h1>
 
     {% if pedido %}
@@ -37,6 +157,7 @@
                             </form>
                         </td>
                     </tr>
+                    
                 {% else %}
                     <tr>
                         <td colspan="4">No hay productos en tu pedido.</td>
@@ -44,9 +165,16 @@
                 {% endfor %}
             </tbody>
         </table>
+        {% if pedido.precioTotal != 0%}
+            <div>
+                <a href="{{ path('comprar_carrito') }}" class="btn btn-admin">Realizar compra</a>
+                <br>
+                <a href="{{ path('download_pedido') }}" class="btn btn-admin">Descargar compra</a>
+            </div>
+        {% endif %}
+        
     {% else %}
         <p>No tienes un pedido en curso.</p>
     {% endif %}
-        <button></button>
-    <a href="/">Volver a la tienda</a>
+        <a href="/">Volver a la tienda</a>
 {% endblock %}

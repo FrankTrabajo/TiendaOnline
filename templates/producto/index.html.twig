@@ -5,93 +5,150 @@
 {% block body %}
 <style>
     body {
-        font-family: Arial, sans-serif;
-        margin: 0;
-        padding: 0;
-        background-color: #f5f5f5;
-    }
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
 
-    .header-container {
-        background-color: rgb(255, 0, 0);
-        color: white;
-        text-align: center;
-        padding: 15px;
-        display: flex;
-        flex-wrap: wrap;
-    }
+        .header-container {
+            background-color: #e60000;
+            color: white;
+            text-align: center;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
 
-    .main-content {
-        max-width: 1200px;
-        margin: auto;
-        padding: 20px;
-    }
+        .header-container h1 {
+            font-size: 24px;
+        }
 
-    .productos-container {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 20px;
-    }
+        .header-container a {
+            color: white;
+            text-decoration: none;
+            padding: 5px 10px;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
 
-    .producto-card {
-        background: white;
-        border-radius: 10px;
-        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-        overflow: hidden;
-        width: 250px;
-        padding: 15px;
-        text-align: center;
-        transition: transform 0.2s;
-    }
+        .header-container a:hover {
+            background-color: #b30000;
+            border-radius: 5px;
+        }
 
-    .producto-card:hover {
-        transform: scale(1.05);
-    }
+        .main-content {
+            max-width: 1200px;
+            margin: auto;
+            padding: 20px;
+        }
 
-    .producto-card img {
-        width: 100%;
-        height: 200px;
-        object-fit: cover;
-        border-bottom: 1px solid #ddd;
-    }
+        .productos-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
 
-    .producto-card h3 {
-        font-size: 18px;
-        margin: 10px 0;
-        color: #333;
-    }
+        .producto-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            width: 250px;
+            padding: 15px;
+            text-align: center;
+            transition: transform 0.2s;
+            cursor: pointer;
+        }
 
-    .producto-card p {
-        color: #666;
-        font-size: 16px;
-    }
+        .producto-card:hover {
+            transform: scale(1.05);
+        }
 
-    .producto-card .precio {
-        font-weight: bold;
-        color: #e60000;
-        font-size: 20px;
-    }
+        .producto-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-bottom: 1px solid #ddd;
+        }
 
-    .btn-comprar {
-        display: inline-block;
-        margin-top: 10px;
-        padding: 8px 15px;
-        background-color: rgb(255, 0, 0);
-        color: white;
-        text-decoration: none;
-        border-radius: 5px;
-        font-size: 16px;
-    }
+        .producto-card h3 {
+            font-size: 18px;
+            margin: 10px 0;
+            color: #333;
+        }
 
-    .btn-comprar:hover {
-        background-color: darkred;
-    }
+        .producto-card p {
+            color: #666;
+            font-size: 16px;
+        }
 
-    .login-options {
-        margin-left: auto; /* Empuja el login hacia la derecha */
-        display: flex; /* Permite que Login y Register estén en fila */
-        gap: 15px; /* Espaciado entre Login y Register */
-    }
+        .producto-card .precio {
+            font-weight: bold;
+            color: #e60000;
+            font-size: 20px;
+        }
+
+        .btn {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 8px 15px;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .btn-comprar {
+            background-color: #e60000;
+        }
+
+        .btn-comprar:hover {
+            background-color: #b30000;
+        }
+
+        .btn-admin {
+            background-color: #1976d2;
+        }
+
+        .btn-admin:hover {
+            background-color: #1565c0;
+        }
+
+        .btn-danger {
+            background-color: #d32f2f;
+        }
+
+        .btn-danger:hover {
+            background-color: #b71c1c;
+        }
+
+        .btn-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .login-options {
+            display: flex;
+            gap: 15px;
+            margin-left: auto;
+        }
+
+        .login-options a {
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+        }
+
+        .login-options a:hover {
+            text-decoration: underline;
+        }
 
 </style>
 
@@ -118,54 +175,45 @@
         </div>
     </div>
 </header>
+
 <main>
     <div class='main-content'>
-        <!-- Aqui van los productos -->
+
+        {% if is_granted('ROLE_ADMIN') %}
+        <div style="text-align: center; margin-bottom: 20px;">
+            <a href="{{ path('create_producto') }}" class="btn btn-admin">Crear nuevo Producto</a>
+        </div>
+        {% endif %}
+
+        <!-- Aquí van los productos -->
         <div class='productos-container'>
             {% for producto in productos %}
                 <div class='producto-card'>
                     <img src="{{ asset('uploads/files/' ~ producto.foto) }}" alt="{{ producto.titulo }}">
-                    <p>{{producto.titulo}}</p>
-                    <p>{{producto.precio}}€</p>
+                    <p>{{ producto.titulo }}</p>
+                    <p class="precio">{{ producto.precio }}€</p>
+
                     <form action='/show/{{producto.id}}'>
-                        <input type='hidden' value='{{producto.id}}'>
-                        <input type='submit' value='Ver producto'>
+                        <input type='submit' class="btn btn-admin" value='Ver producto'>
                     </form>
+
                     <form action="/anadir-pedido/{{producto.id}}" method='post'>
-                        <input type='hidden' class="idProd" value='{{ producto.id }}'>
-                        <button type="submit" class="btn-comprar">Añadir al pedido</button>
+                        <button type="submit" class="btn btn-comprar">Añadir al pedido</button>
                     </form>
+
+                    {% if is_granted('ROLE_ADMIN') %}
+                    <form action="/update/{{producto.id}}">
+                        <button type="submit" class="btn btn-admin">Modificar</button>
+                    </form>
+
+                    <form action="/delete/{{producto.id}}" method="post" onsubmit="return confirm('¿Estás seguro de que deseas eliminar este producto?');">
+                        <button type="submit" class="btn btn-danger">Eliminar</button>
+                    </form>
+                    {% endif %}
                 </div>
             {% endfor %}
-        <div>
+        </div>
     </div>
 </main>
 
-<script>
-//     document.addEventListener('DOMContentLoaded', () => {
-//     document.querySelectorAll('.anadir-producto-form').forEach(form => {
-//         form.addEventListener('submit', function (e) {
-//             e.preventDefault();
-
-//             let idProd = this.querySelector('.idProd').value;
-
-//             fetch("/anadir-pedido/" + idProd, {
-//                 method: 'POST',
-//                 headers: {
-//                     "Content-Type": "application/json"
-//                 }
-//             })
-//             .then(response => response.json())
-//             .then(data => {
-//                 if (data.status == 201) {
-//                     alert("Producto añadido al pedido");
-//                 } else {
-//                     alert("Error al añadir producto");
-//                 }
-//             });
-//         });
-//     });
-// });
-
-</script>
 {% endblock %}

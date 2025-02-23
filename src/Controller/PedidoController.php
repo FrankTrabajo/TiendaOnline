@@ -8,6 +8,7 @@ use App\Entity\ProductoPedido;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
@@ -197,5 +198,88 @@ final class PedidoController extends AbstractController
 
         
         return $this->redirectToRoute('ver_pedido');
+    }
+
+    //Comprar, aqui debe de eliminarse el carrito
+    //En este caso buscamos el id del usuario actual
+    #[Route('/comprar', name: 'comprar_carrito')]
+    public function comprar(EntityManagerInterface $entityManager): Response{
+        //Obtengo el ID del usuario actual
+        $usuario = $this->getUser();
+        
+        //Obtengo el pedido de dicho usuario
+        $pedido = $entityManager->getRepository(Pedido::class)->findOneBy([
+            'usuario' => $usuario
+        ]);
+
+        //Ya tengo el pedido, como no es onDeleteCascade, debo eliminarlo 2 veces
+        //Obtengo el productoPedido (carrito) que tiene el id del pedido
+
+        $productoPedido = $entityManager->getRepository(ProductoPedido::class)->findBy([
+            'pedido' => $pedido
+        ]);
+
+        //Una vez tengo todos los productosPedido con ID del pedido, los elimino
+        foreach($productoPedido as $carrito){
+            $entityManager->remove($carrito);
+        }
+
+        //Una vez eliminado los productos del pedido del carrito,
+        //Elimino el carrito
+        $entityManager->remove($pedido);
+        $entityManager->flush();
+
+        return $this->redirectToRoute('index_producto');
+    }
+
+
+    #[Route('/download', name: 'download_pedido')]
+    public function descargarPedido(EntityManagerInterface $entityManager, ParameterBagInterface $params): Response{
+        //Esto hace que no puedas descargar nada a no ser que te hayas logeado
+        $this->denyAccessUnlessGranted('ROLE_USER');
+        //Obtengo el usuario actual
+        $usuario = $this->getUser();
+
+        //Obtengo el pedido del usuario
+        $pedido = $entityManager->getRepository(Pedido::class)->findOneBy([
+            'usuario' => $usuario
+        ]);
+
+        //Obtengo los productos del pedido
+        $productosPedido = $entityManager->getRepository(ProductoPedido::class)->findBy([
+            'pedido' => $pedido
+        ]);
+
+        //Genero el txt
+        $txt = "Detalles del pedido\n";
+        $txt .= "Fecha: " . $pedido->getFechaPedido()->format('d/m/Y H:i') . ".\n";
+        $txt .= "Usuario: " . $usuario->getEmail() . ".\n";
+        $txt .= "---------------------------------------\n";
+        $txt .= "Productos:\n";
+
+        //Repaso todos los productos
+        foreach($productosPedido as $productoPedido){
+            $producto = $productoPedido->getProducto();
+            $txt .= "- " . $producto->getTitulo() . " | Cantidad: " . 
+                $productoPedido->getCantidad() . " | Precio: " . 
+                $producto->getPrecio() . "€. \n";
+        }
+
+        $txt .= "---------------------------------------\n";
+        $txt .= "Total: " . $pedido->getPrecioTotal() . "€. \n";
+
+        //Importante, guardar el archivo en el servidor
+        $directorioPedido = $params->get('kernel.project_dir') . '/public/uploads/pedidos';
+        if(!file_exists($directorioPedido)){
+            mkdir($directorioPedido, 0777, true);
+        }
+
+        $nombreTxt = "pedido_" . $pedido->getId() . ".txt";
+        $rutaArchivo = $directorioPedido . $nombreTxt;
+
+        //Guardar archivo en el servidor
+        file_put_contents($rutaArchivo, $txt);
+
+        return $this->file($rutaArchivo);
     }
 }

@@ -1,0 +1,8 @@
+Detalles del pedido
+Fecha: 23/02/2025 18:41.
+Usuario: admin@correo.com.
+---------------------------------------
+Productos:
+- Horno Microondas Panasonic 25L | Cantidad: 1 | Precio: 129.99€. 
+---------------------------------------
+Total: 129.99€. 
